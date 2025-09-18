@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      #- ./init-scripts:/docker-entrypoint-initdb.d #for initializing database with custom scripts
+      - ./data:/docker-entrypoint-initdb.d #for initializing database with custom scripts
+      - postgres_data:/var/lib/postgresql/data #for persisting database data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      - postgres
+    volumes:
+    - pgadmin_data:/var/lib/pgadmin #for persisting pgAdmin data
+
+volumes:
+  postgres_data:
+  pgadmin_data:
